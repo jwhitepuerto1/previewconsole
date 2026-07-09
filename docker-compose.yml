@@ -1,0 +1,35 @@
+# CRM Preview Mode deployment. Only `ui` is published — `api` is reachable
+# solely over the compose network, matching local dev's pattern where the
+# browser only ever talks to the frontend's own origin (Next.js rewrites
+# proxy /api/* and /auth/* to the backend server-side).
+#
+# Reads secrets from a .env file placed next to this one on the host —
+# create it from .env.production.example and NEVER commit it.
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      PLATFORM_DATABASE_URL: ${PLATFORM_DATABASE_URL}
+      PREVIEW_DATABASE_URL_MERIDIAN: ${PREVIEW_DATABASE_URL_MERIDIAN}
+      PREVIEW_DATABASE_URL_CORNERSTONE: ${PREVIEW_DATABASE_URL_CORNERSTONE}
+      PREVIEW_DATABASE_URL_ELEVATION: ${PREVIEW_DATABASE_URL_ELEVATION}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      ENVIRONMENT: production
+    expose:
+      - "8001"
+
+  ui:
+    build:
+      context: ./ui
+      args:
+        # Resolved server-side by Next's own rewrites() at build time (baked
+        # into routes-manifest.json, not re-read at container start) — the
+        # Docker Compose service name "api" resolves via Compose's internal
+        # DNS, so this never needs to be a public URL.
+        NEXT_PUBLIC_API_URL: http://api:8001
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3001:3001"
