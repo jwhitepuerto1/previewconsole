@@ -21,7 +21,10 @@ from app.core.security import TokenError, decode_token
 from app.db.models.platform import PlatformAccount
 from app.db.session import get_engine
 
-OPEN_PATHS = {"/health", "/docs", "/openapi.json", "/redoc", "/api/preview/register", "/auth/login"}
+OPEN_PATHS = {
+    "/health", "/docs", "/openapi.json", "/redoc",
+    "/api/preview/register", "/auth/login", "/oauth/callback",
+}
 
 # Roles with no single client_id in their token — they act on a client
 # specified per-request via X-Acting-Client-Id instead.

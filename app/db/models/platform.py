@@ -58,6 +58,19 @@ class PlatformSupportAssignment(PlatformBase):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
 
+class PlatformIntegrationToken(PlatformBase):
+    """Stores rotating OAuth2 refresh tokens for outbound integrations
+    (currently just Mautic — see app/integrations/mautic.py). Kept in
+    Postgres rather than a .env file: the production container's filesystem
+    is rebuilt on every deploy, so a file write there would silently lose
+    the token on the very next `git push`."""
+    __tablename__ = "platform_integration_tokens"
+
+    provider: Mapped[str] = mapped_column(String(50), primary_key=True)
+    refresh_token: Mapped[str] = mapped_column(Text, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
 class PlatformAuditLog(PlatformBase):
     __tablename__ = "platform_audit_log"
 

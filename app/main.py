@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app.core.config import settings  # validates env vars on boot
 from app.middleware.auth import AuthMiddleware
 from app.middleware.preview import PreviewIsolationMiddleware
-from app.api.routes import accounts, auth, dashboard, pipeline, preview, targets
+from app.api.routes import accounts, auth, dashboard, oauth, pipeline, preview, targets
 
 app = FastAPI(
     title="IAS Capital Raise Module",
@@ -24,6 +24,7 @@ app.include_router(accounts.router, prefix="/api/accounts", tags=["Accounts"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(targets.router, prefix="/api/targets", tags=["Targets"])
 app.include_router(pipeline.router, prefix="/api/pipeline", tags=["Pipeline"])
+app.include_router(oauth.router, tags=["OAuth"])
 
 
 @app.get("/health", tags=["Health"])

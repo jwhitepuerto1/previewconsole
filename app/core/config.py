@@ -35,6 +35,13 @@ class Settings(BaseSettings):
 
     environment: str = "development"
 
+    # Mautic (preview-signup lead push — see app/integrations/mautic.py)
+    mautic_base_url: str = ""
+    mautic_client_id: str = ""
+    mautic_client_secret: str = ""
+    mautic_redirect_uri: str = ""
+    mautic_segment_id: int | None = None
+
     @property
     def debug(self) -> bool:
         return self.environment == "development"

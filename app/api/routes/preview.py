@@ -11,13 +11,14 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.security import create_preview_token
+from app.integrations.mautic import push_lead
 from app.db.models.client_raise import (
     CampaignMetrics,
     Campaign,
@@ -64,7 +65,11 @@ class RegisterResponse(BaseModel):
 
 
 @router.post("/register", response_model=RegisterResponse)
-async def register(body: RegisterRequest, platform_db: AsyncSession = Depends(get_platform_db)):
+async def register(
+    body: RegisterRequest,
+    background_tasks: BackgroundTasks,
+    platform_db: AsyncSession = Depends(get_platform_db),
+):
     profile_db = settings.preview_db_map.get(body.deal_type, settings.preview_db_map["other"])
     profile_name = PROFILE_DISPLAY_NAMES[profile_db]
 
@@ -89,6 +94,11 @@ async def register(body: RegisterRequest, platform_db: AsyncSession = Depends(ge
         },
     ))
     await platform_db.commit()
+
+    # Best-effort — Mautic being slow/down never blocks the registration response.
+    background_tasks.add_task(
+        push_lead, name=body.name, email=body.email, deal_type=body.deal_type, raise_target=body.raise_target,
+    )
 
     return RegisterResponse(token=token, profile_db=profile_db, profile_name=profile_name)
 
