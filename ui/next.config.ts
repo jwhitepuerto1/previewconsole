@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
       // spec section 8's literal /auth/login) — needs its own rewrite or
       // Next.js 404s it as an unmatched app route.
       { source: "/auth/:path*", destination: `${apiUrl}/auth/:path*` },
+      // Mautic's OAuth2 redirect target — see app/api/routes/oauth.py.
+      { source: "/oauth/:path*", destination: `${apiUrl}/oauth/:path*` },
     ];
   },
 };
