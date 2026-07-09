@@ -10,7 +10,11 @@ export default function RootPage() {
   useEffect(() => {
     const token = getToken();
     if (!token) {
-      router.replace("/login");
+      // Anonymous visitors are prospects landing on the public marketing
+      // URL, not reps/clients who already have credentials — send them to
+      // the no-login preview signup, not the rep/client login screen.
+      // /login is still directly reachable by URL for reps/clients.
+      router.replace("/preview/register");
     } else if (getRole() === "preview") {
       router.replace("/preview/dashboard");
     } else {
