@@ -40,7 +40,7 @@ export default function RegisterPage() {
     <div className="flex min-h-[80vh] items-center justify-center">
       <form onSubmit={handleSubmit} className="card w-full max-w-md">
         <h1 className="text-xl font-semibold text-slate-100">See your raise, live</h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-slate-300">
           A quick preview of the Capital Context raise operating environment — built on a
           fictitious deal matched to your profile.
         </p>

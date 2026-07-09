@@ -23,6 +23,6 @@
   }
 
   .label {
-    @apply text-xs font-medium uppercase tracking-wider text-slate-500;
+    @apply text-xs font-medium uppercase tracking-wider text-slate-300;
   }
 }

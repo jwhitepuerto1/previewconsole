@@ -10,7 +10,7 @@ export function ClientSwitcher({ onSet }: { onSet: () => void }) {
 
   return (
     <div className="flex items-center gap-2 border-b border-slate-800 bg-slate-900 px-6 py-2">
-      <span className="text-xs text-slate-500">Acting as client:</span>
+      <span className="text-xs text-slate-300">Acting as client:</span>
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}

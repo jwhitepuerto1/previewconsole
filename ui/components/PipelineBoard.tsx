@@ -38,7 +38,7 @@ export function PipelineBoard({ investors, onMoveStage }: PipelineBoardProps) {
         <div key={stage} className="w-72 flex-shrink-0">
           <div className="mb-2 flex items-center justify-between">
             <p className="label">{STAGE_LABELS[stage] ?? stage}</p>
-            <span className="text-xs text-slate-500">{byStage.get(stage)?.length}</span>
+            <span className="text-xs text-slate-300">{byStage.get(stage)?.length}</span>
           </div>
           <div className="flex flex-col gap-2">
             {byStage.get(stage)?.map((inv) => (
@@ -51,7 +51,7 @@ export function PipelineBoard({ investors, onMoveStage }: PipelineBoardProps) {
                       if (e.target.value) onMoveStage(inv.id, e.target.value);
                       e.target.value = "";
                     }}
-                    className="mt-1 w-full rounded border border-slate-800 bg-slate-950 px-2 py-1 text-xs text-slate-400 outline-none focus:border-brand-accent"
+                    className="mt-1 w-full rounded border border-slate-800 bg-slate-950 px-2 py-1 text-xs text-slate-300 outline-none focus:border-brand-accent"
                   >
                     <option value="" disabled>Move to…</option>
                     {Object.entries(STAGE_LABELS)

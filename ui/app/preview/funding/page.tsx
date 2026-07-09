@@ -19,7 +19,7 @@ export default function FundingPage() {
     getFunding().then(setData).catch(() => router.push("/preview/register"));
   }, [router]);
 
-  if (!data) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (!data) return <p className="text-sm text-slate-300">Loading…</p>;
 
   return (
     <div className="flex flex-col gap-6">

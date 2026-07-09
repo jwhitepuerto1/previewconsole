@@ -34,7 +34,7 @@ export function Nav({ variant = "preview" }: { variant?: "preview" | "client" })
             "rounded-lg px-3 py-1.5 text-sm transition",
             pathname === link.href
               ? "bg-slate-800 text-slate-100"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200",
+              : "text-slate-300 hover:bg-slate-900 hover:text-slate-200",
           )}
         >
           {link.label}

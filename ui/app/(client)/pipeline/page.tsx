@@ -26,13 +26,13 @@ export default function RealPipelinePage() {
   }
 
   if (error) return <p className="text-sm text-amber-400">{error}</p>;
-  if (!data) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (!data) return <p className="text-sm text-slate-300">Loading…</p>;
 
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold text-slate-100">Investor Pipeline</h1>
       {data.investors.length === 0 ? (
-        <p className="text-sm text-slate-500">No investors yet — add one from the Targets page.</p>
+        <p className="text-sm text-slate-300">No investors yet — add one from the Targets page.</p>
       ) : (
         <PipelineBoard investors={data.investors} onMoveStage={handleMove} />
       )}

@@ -23,13 +23,13 @@ export default function RealDashboardPage() {
   }, []);
 
   if (error) return <p className="text-sm text-amber-400">{error}</p>;
-  if (!data) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (!data) return <p className="text-sm text-slate-300">Loading…</p>;
 
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold text-slate-100">{data.raise_name ?? "Untitled Raise"}</h1>
-        <p className="text-sm text-slate-500">{data.status}</p>
+        <p className="text-sm text-slate-300">{data.status}</p>
       </div>
 
       <div className="grid grid-cols-4 gap-4">
@@ -56,13 +56,13 @@ export default function RealDashboardPage() {
       <div className="card">
         <p className="label mb-3">Pipeline by stage</p>
         {Object.keys(data.pipeline_by_stage).length === 0 ? (
-          <p className="text-sm text-slate-500">No investors added yet — add one from the Targets page.</p>
+          <p className="text-sm text-slate-300">No investors added yet — add one from the Targets page.</p>
         ) : (
           <div className="flex flex-wrap gap-3">
             {Object.entries(data.pipeline_by_stage).map(([stage, count]) => (
               <div key={stage} className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2">
                 <p className="text-sm text-slate-200">{count}</p>
-                <p className="text-xs text-slate-500">{stage.replace("_", " ")}</p>
+                <p className="text-xs text-slate-300">{stage.replace("_", " ")}</p>
               </div>
             ))}
           </div>

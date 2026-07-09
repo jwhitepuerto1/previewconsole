@@ -7,15 +7,15 @@ export function CampaignMetrics({ data }: { data: CampaignsData }) {
       <div className="mt-4 grid grid-cols-3 gap-4">
         <div>
           <p className="text-2xl font-semibold text-slate-100">{data.open_rate}%</p>
-          <p className="text-xs text-slate-500">Open rate</p>
+          <p className="text-xs text-slate-300">Open rate</p>
         </div>
         <div>
           <p className="text-2xl font-semibold text-slate-100">{data.reply_rate}%</p>
-          <p className="text-xs text-slate-500">Reply rate</p>
+          <p className="text-xs text-slate-300">Reply rate</p>
         </div>
         <div>
           <p className="text-2xl font-semibold text-slate-100">{data.meetings_scheduled}</p>
-          <p className="text-xs text-slate-500">Meetings scheduled</p>
+          <p className="text-xs text-slate-300">Meetings scheduled</p>
         </div>
       </div>
       <div className="mt-6">
@@ -28,7 +28,7 @@ export function CampaignMetrics({ data }: { data: CampaignsData }) {
                 style={{ height: `${Math.max(8, m.sent)}px` }}
                 title={`${m.week_ending}: ${m.sent} sent, ${m.opened} opened, ${m.replied} replied`}
               />
-              <span className="text-[10px] text-slate-600">W{i + 1}</span>
+              <span className="text-[10px] text-slate-400">W{i + 1}</span>
             </div>
           ))}
         </div>

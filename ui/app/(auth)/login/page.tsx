@@ -31,7 +31,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-950">
       <form onSubmit={handleSubmit} className="card w-full max-w-sm">
         <h1 className="text-xl font-semibold text-slate-100">Capital Context</h1>
-        <p className="mt-1 text-sm text-slate-400">Sign in to your raise portal.</p>
+        <p className="mt-1 text-sm text-slate-300">Sign in to your raise portal.</p>
 
         <div className="mt-6 flex flex-col gap-4">
           <div>

@@ -36,9 +36,9 @@ export function PreviewOnboardingTour() {
       <div className="card max-w-md">
         <p className="label mb-2">Step {step + 1} of {STEPS.length}</p>
         <h3 className="text-lg font-semibold text-slate-100">{current.title}</h3>
-        <p className="mt-2 text-sm text-slate-400">{current.body}</p>
+        <p className="mt-2 text-sm text-slate-300">{current.body}</p>
         <div className="mt-6 flex justify-between">
-          <button onClick={finish} className="text-sm text-slate-500 hover:text-slate-300">
+          <button onClick={finish} className="text-sm text-slate-300 hover:text-slate-300">
             Skip tour
           </button>
           <button

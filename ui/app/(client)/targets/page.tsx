@@ -68,15 +68,15 @@ export default function TargetsPage() {
       {targets && (
         <div className="flex flex-col gap-2">
           {targets.length === 0 ? (
-            <p className="text-sm text-slate-500">No targets yet.</p>
+            <p className="text-sm text-slate-300">No targets yet.</p>
           ) : (
             targets.map((t) => (
               <div key={t.id} className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950 px-3 py-2">
                 <div>
                   <p className="text-sm font-medium text-slate-100">{t.full_name}</p>
-                  <p className="text-xs text-slate-500">{t.title} · {t.company}</p>
+                  <p className="text-xs text-slate-300">{t.title} · {t.company}</p>
                 </div>
-                <span className="text-xs text-slate-500">{t.status}</span>
+                <span className="text-xs text-slate-300">{t.status}</span>
               </div>
             ))
           )}

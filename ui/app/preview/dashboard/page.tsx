@@ -24,13 +24,13 @@ export default function DashboardPage() {
     getDashboard().then(setData).catch(() => router.push("/preview/register"));
   }, [router]);
 
-  if (!data) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (!data) return <p className="text-sm text-slate-300">Loading…</p>;
 
   return (
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold text-slate-100">{data.raise_name}</h1>
-        <p className="text-sm text-slate-500">Day {data.days_active} of active raise</p>
+        <p className="text-sm text-slate-300">Day {data.days_active} of active raise</p>
       </div>
 
       <div className="grid grid-cols-4 gap-4">
@@ -60,7 +60,7 @@ export default function DashboardPage() {
           {Object.entries(data.pipeline_by_stage).map(([stage, count]) => (
             <div key={stage} className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2">
               <p className="text-sm text-slate-200">{count}</p>
-              <p className="text-xs text-slate-500">{stage.replace("_", " ")}</p>
+              <p className="text-xs text-slate-300">{stage.replace("_", " ")}</p>
             </div>
           ))}
         </div>

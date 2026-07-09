@@ -12,7 +12,7 @@ export function DataRoomPanel({ data }: { data: DataRoomData }) {
     <div className="card">
       <div className="mb-4 flex items-center justify-between">
         <p className="label">Documents</p>
-        <p className="text-sm text-slate-400">{data.views_this_week} views this week</p>
+        <p className="text-sm text-slate-300">{data.views_this_week} views this week</p>
       </div>
       <div className="flex flex-col gap-2">
         {data.documents.map((doc) => (
