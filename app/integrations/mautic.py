@@ -67,7 +67,7 @@ async def exchange_code_for_tokens(code: str) -> dict:
         )
     _raise_for_status(resp)
     tokens = resp.json()
-    _persist_refresh_token(tokens["refresh_token"])
+    await _persist_refresh_token(tokens["refresh_token"])
     return tokens
 
 
