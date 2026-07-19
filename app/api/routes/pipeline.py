@@ -21,6 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import require_permission
 from app.db.models.client_raise import InvestorTarget, PipelineHistory, PipelineRecord
 from app.db.session import get_tenant_db
+from app.services.alert_dispatcher import create_alert
 
 router = APIRouter()
 
@@ -95,6 +96,17 @@ async def move_stage(
     ))
 
     await db.commit()
+
+    if request.state.client_id:
+        target = await db.get(InvestorTarget, target_id)
+        await create_alert(
+            db, request.state.client_id,
+            alert_type="pipeline_movement", severity="info",
+            title="Pipeline movement",
+            message=f"{target.full_name if target else 'An investor'} moved to {body.stage}",
+            related_investor_id=target_id,
+        )
+
     return {"investor_target_id": str(target_id), "from_stage": old_stage, "to_stage": body.stage}
 
 

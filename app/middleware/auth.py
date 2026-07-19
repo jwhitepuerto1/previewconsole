@@ -26,6 +26,12 @@ OPEN_PATHS = {
     "/api/preview/register", "/auth/login", "/oauth/callback",
 }
 
+# Prefix-matched open paths — for routes with a path parameter (the {client_id}
+# in Smartlead's webhook URL), so a fixed OPEN_PATHS set membership check can't
+# apply. Auth here is the X-Webhook-Secret header the route itself checks, not
+# a Bearer token — Smartlead has no way to hold a per-client JWT.
+OPEN_PATH_PREFIXES = ("/api/email-events/sync/",)
+
 # Roles with no single client_id in their token — they act on a client
 # specified per-request via X-Acting-Client-Id instead.
 _ACTING_CLIENT_ROLES = {"support_manager", "cc_admin"}
@@ -108,7 +114,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 request.state.client_db_url = db_url
                 request.state.client_id = client_id
 
-        elif request.url.path not in OPEN_PATHS:
+        elif request.url.path not in OPEN_PATHS and not request.url.path.startswith(OPEN_PATH_PREFIXES):
             return JSONResponse(
                 status_code=401,
                 content={"detail": "Missing Authorization: Bearer <token> header."},

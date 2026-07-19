@@ -3,12 +3,15 @@ from fastapi import FastAPI
 from app.core.config import settings  # validates env vars on boot
 from app.middleware.auth import AuthMiddleware
 from app.middleware.preview import PreviewIsolationMiddleware
-from app.api.routes import accounts, auth, dashboard, oauth, pipeline, preview, targets
+from app.api.routes import (
+    accounts, alerts, auth, campaigns, dashboard, email_sequences, linkedin,
+    meetings, notes, oauth, pipeline, preview, reports, targets,
+)
 
 app = FastAPI(
     title="IAS Capital Raise Module",
-    description="Preview Mode marketing demo + real account/rep-tools Phase 1.",
-    version="0.2.0",
+    description="Preview Mode marketing demo + real account/rep-tools Phase 1 + Phase 2 campaign workflow.",
+    version="0.3.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -25,6 +28,13 @@ app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"]
 app.include_router(targets.router, prefix="/api/targets", tags=["Targets"])
 app.include_router(pipeline.router, prefix="/api/pipeline", tags=["Pipeline"])
 app.include_router(oauth.router, tags=["OAuth"])
+app.include_router(campaigns.router, prefix="/api/campaigns", tags=["Campaigns"])
+app.include_router(email_sequences.router, prefix="/api/email-events", tags=["Email Sequences"])
+app.include_router(linkedin.router, prefix="/api/linkedin", tags=["LinkedIn"])
+app.include_router(meetings.router, prefix="/api/meetings", tags=["Meetings"])
+app.include_router(notes.router, prefix="/api/notes", tags=["Notes"])
+app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
+app.include_router(alerts.router, prefix="/api/alerts", tags=["Alerts"])
 
 
 @app.get("/health", tags=["Health"])

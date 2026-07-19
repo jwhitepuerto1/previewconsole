@@ -42,6 +42,14 @@ class Settings(BaseSettings):
     mautic_redirect_uri: str = ""
     mautic_segment_id: int | None = None
 
+    # Smartlead (campaign email sequences — see app/services/smartlead.py).
+    # Webhook secret guards POST /api/email-events/sync/{client_id}, which is
+    # unauthenticated (Smartlead can't hold a per-client JWT) but open to the
+    # internet, so it needs its own shared-secret check instead.
+    smartlead_base_url: str = "https://server.smartlead.ai/api/v1"
+    smartlead_api_key: str = ""
+    smartlead_webhook_secret: str = ""
+
     @property
     def debug(self) -> bool:
         return self.environment == "development"
