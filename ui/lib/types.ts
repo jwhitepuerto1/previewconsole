@@ -217,3 +217,37 @@ export interface NoteRow {
   logged_by: string | null;
   logged_at: string;
 }
+
+export interface SupportClientHealth {
+  client_id: string;
+  company_name: string | null;
+  status: string | null;
+  raise_name: string | null;
+  raise_status: string | null;
+  investor_count: number;
+  percent_raised: number;
+  days_since_last_movement: number | null;
+  active_campaign_count: number;
+  needs_attention: boolean;
+  is_escalated: boolean;
+}
+
+export interface SupportOverview {
+  total_clients: number;
+  needs_attention_count: number;
+  escalated_count: number;
+  average_percent_raised: number;
+  clients: SupportClientHealth[];
+}
+
+export interface SupportAlertRow {
+  client_id: string;
+  company_name: string | null;
+  id: string;
+  alert_type: string | null;
+  severity: string | null;
+  title: string | null;
+  message: string | null;
+  is_read: boolean;
+  created_at: string;
+}

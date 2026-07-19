@@ -6,13 +6,13 @@ from app.middleware.preview import PreviewIsolationMiddleware
 from app.api.routes import (
     accounts, alerts, auth, campaigns, dashboard, data_room, email_sequences,
     funding, linkedin, meetings, notes, oauth, onboarding, pipeline, preview,
-    reports, targets,
+    reports, support, targets,
 )
 
 app = FastAPI(
     title="IAS Capital Raise Module",
-    description="Preview Mode marketing demo + real account/rep-tools Phase 1 + Phase 2 campaign workflow + Phase 3 data room/onboarding/funding.",
-    version="0.4.0",
+    description="Preview Mode marketing demo + real account/rep-tools Phase 1 + Phase 2 campaign workflow + Phase 3 data room/onboarding/funding + Phase 4 support dashboard.",
+    version="0.5.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -39,6 +39,7 @@ app.include_router(alerts.router, prefix="/api/alerts", tags=["Alerts"])
 app.include_router(data_room.router, prefix="/api/data-room", tags=["Data Room"])
 app.include_router(onboarding.router, prefix="/api/onboarding", tags=["Onboarding"])
 app.include_router(funding.router, prefix="/api/funding", tags=["Funding"])
+app.include_router(support.router, prefix="/api/support", tags=["Support"])
 
 
 @app.get("/health", tags=["Health"])

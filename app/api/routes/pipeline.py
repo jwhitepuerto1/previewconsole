@@ -22,6 +22,7 @@ from app.api.deps import require_permission
 from app.db.models.client_raise import InvestorTarget, PipelineHistory, PipelineRecord
 from app.db.session import get_tenant_db
 from app.services.alert_dispatcher import create_alert
+from app.services.rep_activity import log_rep_activity
 
 router = APIRouter()
 
@@ -94,6 +95,11 @@ async def move_stage(
         moved_at=now,
         reason=body.reason,
     ))
+
+    await log_rep_activity(
+        db, rep_user_id=claims.get("sub"), activity_type="pipeline_move",
+        description=f"Moved {old_stage or 'unknown'} -> {body.stage}", investor_target_id=target_id,
+    )
 
     await db.commit()
 

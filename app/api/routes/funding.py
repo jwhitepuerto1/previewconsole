@@ -19,6 +19,7 @@ from app.api.deps import require_permission
 from app.db.models.client_raise import FundingEvent, FundingSummary, InvestorTarget, RaiseConfig
 from app.db.session import get_tenant_db
 from app.services.alert_dispatcher import create_alert
+from app.services.rep_activity import log_rep_activity
 
 router = APIRouter()
 
@@ -115,6 +116,13 @@ async def create_event(body: CreateFundingEventRequest, request: Request, db: As
     db.add(event)
     await db.flush()
     await _apply_event_to_summary(db, event)
+
+    claims = request.state.claims or {}
+    await log_rep_activity(
+        db, rep_user_id=claims.get("sub"), activity_type="funding_event",
+        description=f"Logged {body.event_type} for ${body.amount:,}", investor_target_id=body.investor_target_id,
+    )
+
     await db.commit()
 
     if request.state.client_id:

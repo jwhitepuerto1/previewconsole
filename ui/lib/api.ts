@@ -2,7 +2,8 @@ import { getActingClientId, getToken, needsActingClientId } from "./auth";
 import type {
   ActionItemRow, AlertRow, CampaignsData, DashboardData, DataRoomData, FundingData, LoginResponse,
   MeetingRow, NoteRow, PipelineData, PipelineHistoryEntry, RealCampaign, RealDocument,
-  RealFundingEvent, RealFundingSummary, RealReport, RegisterResponse, ReportData, TargetRow,
+  RealFundingEvent, RealFundingSummary, RealReport, RegisterResponse, ReportData,
+  SupportAlertRow, SupportOverview, TargetRow,
 } from "./types";
 
 async function authedGet<T>(path: string): Promise<T> {
@@ -129,6 +130,15 @@ export const createActionItem = (meetingId: string, body: { action: string; assi
 export const getNotes = (targetId: string) => realFetch<NoteRow[]>(`/api/notes/${targetId}`);
 export const createNote = (body: { investor_target_id: string; note: string; note_type?: string }) =>
   realFetch<NoteRow>("/api/notes", { method: "POST", body: JSON.stringify(body) });
+
+// Support routes are platform-level, not tenant-scoped — X-Acting-Client-Id
+// (added by realFetch when present) is simply ignored server-side here.
+export const getSupportOverview = () => realFetch<SupportOverview>("/api/support/overview");
+export const getSupportAlerts = () => realFetch<{ alerts: SupportAlertRow[] }>("/api/support/alerts");
+export const escalateClient = (clientId: string, reason: string) =>
+  realFetch<{ status: string }>(`/api/support/clients/${clientId}/escalate`, { method: "POST", body: JSON.stringify({ reason }) });
+export const resolveEscalation = (clientId: string) =>
+  realFetch<{ status: string }>(`/api/support/clients/${clientId}/resolve-escalation`, { method: "POST" });
 
 export const getRealReports = () => realFetch<RealReport[]>("/api/reports");
 

@@ -19,7 +19,8 @@ export default function LoginPage() {
     try {
       const res = await login(email, password);
       storeRealSession(res.token, res.role);
-      router.push("/dashboard");
+      const isRepOrAdmin = res.role === "support_manager" || res.role === "cc_admin";
+      router.push(isRepOrAdmin ? "/overview" : "/dashboard");
     } catch {
       setError("Invalid email or password.");
     } finally {

@@ -23,9 +23,19 @@ const CLIENT_LINKS = [
   { href: "/reports", label: "Reports" },
 ];
 
-export function Nav({ variant = "preview", right }: { variant?: "preview" | "client"; right?: React.ReactNode }) {
+const SUPPORT_LINKS = [
+  { href: "/overview", label: "Overview" },
+  { href: "/alerts", label: "Alerts" },
+];
+
+export function Nav({
+  variant = "preview", right,
+}: {
+  variant?: "preview" | "client" | "support";
+  right?: React.ReactNode;
+}) {
   const pathname = usePathname();
-  const LINKS = variant === "client" ? CLIENT_LINKS : PREVIEW_LINKS;
+  const LINKS = variant === "client" ? CLIENT_LINKS : variant === "support" ? SUPPORT_LINKS : PREVIEW_LINKS;
 
   return (
     <nav className="flex items-center gap-1 border-b border-slate-800 bg-slate-950 px-6 py-3">

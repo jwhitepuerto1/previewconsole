@@ -35,7 +35,7 @@ from app.db.models.platform import (
 )
 from app.db.session import get_engine
 
-_ACCOUNT_NAME_PATTERNS = ["Phase1 Verify%", "Phase2 Verify%", "Phase3 Verify%", "SSE Test%"]
+_ACCOUNT_NAME_PATTERNS = ["Phase1 Verify%", "Phase2 Verify%", "Phase3 Verify%", "Phase4 Verify%", "SSE Test%"]
 _EMAIL_PATTERNS = ["verify%@%", "ssetest%@%"]
 
 
