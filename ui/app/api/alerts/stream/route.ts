@@ -27,6 +27,11 @@ export async function GET(request: Request) {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
+      // Must be forwarded, not just set on the FastAPI response — Elestio's
+      // own outer edge proxy (in front of this whole compose stack, a layer
+      // no local test ever exercises) sits beyond this route entirely, and
+      // only sees headers this Response object itself sends.
+      "X-Accel-Buffering": "no",
     },
   });
 }
