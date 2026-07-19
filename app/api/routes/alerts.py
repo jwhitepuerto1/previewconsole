@@ -33,6 +33,13 @@ async def alert_stream(request: Request):
 
     async def event_source():
         try:
+            # Sent immediately on connect, before the queue can possibly miss
+            # anything — lets any client (this stream's own test, or the real
+            # UI) know the subscription is live rather than inferring it from
+            # silence. publish() only reaches queues that already exist, so
+            # without this a client has no way to know it's safe to act on
+            # something that triggers an alert.
+            yield f"data: {json.dumps({'type': 'ready'})}\n\n"
             while True:
                 if await request.is_disconnected():
                     break

@@ -174,17 +174,27 @@ async def main() -> None:
                 resp = await client.delete(f"/api/notes/{note_id}", headers=admin_headers)
                 check("delete investor note", resp.status_code == 204, f"HTTP {resp.status_code}")
 
-            # --- SSE alert: subscribe, move pipeline stage, confirm it arrives live ---
-            async def listen_for_alert() -> dict | None:
+            # --- SSE alert: subscribe, wait for the connection handshake (not
+            # a guessed sleep — publish() only reaches queues that already
+            # exist, so triggering the move before the subscription is truly
+            # registered would make the alert vanish, not arrive late), move
+            # pipeline stage, confirm it arrives live ---
+            ready_event = asyncio.Event()
+
+            async def listen_for_alert(ready: asyncio.Event) -> dict | None:
                 async with httpx.AsyncClient(base_url=BASE_URL, timeout=20) as sse_client:
                     async with sse_client.stream("GET", "/api/alerts/stream", headers=admin_headers) as stream:
                         async for line in stream.aiter_lines():
                             if line.startswith("data: "):
-                                return json.loads(line[len("data: "):])
+                                payload = json.loads(line[len("data: "):])
+                                if payload.get("type") == "ready":
+                                    ready.set()
+                                    continue
+                                return payload
                 return None
 
-            listener = asyncio.create_task(listen_for_alert())
-            await asyncio.sleep(1)  # let the SSE connection establish before triggering the move
+            listener = asyncio.create_task(listen_for_alert(ready_event))
+            await asyncio.wait_for(ready_event.wait(), timeout=10)
             resp = await client.patch(f"/api/pipeline/{target_id}/stage", headers=admin_headers, json={"stage": "qualified"})
             check("client_admin moves pipeline stage", resp.status_code == 200, f"HTTP {resp.status_code}")
 
