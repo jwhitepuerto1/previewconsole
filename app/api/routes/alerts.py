@@ -51,7 +51,20 @@ async def alert_stream(request: Request):
         finally:
             unsubscribe(client_id, queue)
 
-    return StreamingResponse(event_source(), media_type="text/event-stream")
+    return StreamingResponse(
+        event_source(),
+        media_type="text/event-stream",
+        headers={
+            # Elestio's front-end proxy (and most nginx-based reverse
+            # proxies) buffer a response by default, which would hold this
+            # entire stream until it closes — defeating the point of SSE.
+            # X-Accel-Buffering is nginx's own opt-out; Cache-Control/
+            # Connection are the standard SSE headers most proxies respect.
+            "X-Accel-Buffering": "no",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        },
+    )
 
 
 class AlertOut(BaseModel):
