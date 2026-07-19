@@ -112,3 +112,75 @@ export interface PipelineHistoryEntry {
   moved_at: string | null;
   reason: string | null;
 }
+
+// ── Real (non-preview) Phase 2/3 shapes — these are per-record lists, not
+// the single flattened summary objects the preview routes return above. ──
+
+export interface RealCampaign {
+  id: string;
+  campaign_name: string | null;
+  channel: string | null;
+  smartlead_campaign_id: string | null;
+  status: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  target_count: number | null;
+}
+
+export interface RealDocument {
+  id: string;
+  document_name: string | null;
+  document_type: string | null;
+  file_path: string | null;
+  file_size_bytes: number | null;
+  version: number;
+  access_level: string | null;
+  uploaded_by: string | null;
+  uploaded_at: string;
+}
+
+export interface RealFundingSummary {
+  raise_target: number | null;
+  soft_committed: number;
+  hard_committed: number;
+  funded: number;
+  investor_count_soft: number;
+  investor_count_funded: number;
+  percent_raised: number;
+}
+
+export interface RealFundingEvent {
+  id: string;
+  investor_target_id: string | null;
+  event_type: string | null;
+  amount: number | null;
+  event_date: string | null;
+  notes: string | null;
+}
+
+export interface RealReport {
+  id: string;
+  report_week_ending: string | null;
+  generated_at: string;
+  generated_by: string | null;
+  pipeline_summary: Record<string, unknown> | null;
+  campaign_summary: Record<string, unknown> | null;
+  meeting_summary: Record<string, unknown> | null;
+  funding_summary: Record<string, unknown> | null;
+  key_activities: string | null;
+  next_week_priorities: string | null;
+  rep_commentary: string | null;
+  status: string | null;
+  published_at: string | null;
+}
+
+export interface AlertRow {
+  id: string;
+  alert_type: string | null;
+  severity: string | null;
+  title: string | null;
+  message: string | null;
+  related_investor_id: string | null;
+  is_read: boolean;
+  created_at: string;
+}

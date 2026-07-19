@@ -17,9 +17,13 @@ const CLIENT_LINKS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/pipeline", label: "Pipeline" },
   { href: "/targets", label: "Targets" },
+  { href: "/campaigns", label: "Campaigns" },
+  { href: "/data-room", label: "Data Room" },
+  { href: "/funding", label: "Funding" },
+  { href: "/reports", label: "Reports" },
 ];
 
-export function Nav({ variant = "preview" }: { variant?: "preview" | "client" }) {
+export function Nav({ variant = "preview", right }: { variant?: "preview" | "client"; right?: React.ReactNode }) {
   const pathname = usePathname();
   const LINKS = variant === "client" ? CLIENT_LINKS : PREVIEW_LINKS;
 
@@ -40,6 +44,7 @@ export function Nav({ variant = "preview" }: { variant?: "preview" | "client" })
           {link.label}
         </Link>
       ))}
+      <div className="ml-auto">{right}</div>
     </nav>
   );
 }

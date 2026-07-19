@@ -1,7 +1,8 @@
 import { getActingClientId, getToken, needsActingClientId } from "./auth";
 import type {
-  CampaignsData, DashboardData, DataRoomData, FundingData, LoginResponse, PipelineData,
-  PipelineHistoryEntry, RegisterResponse, ReportData, TargetRow,
+  AlertRow, CampaignsData, DashboardData, DataRoomData, FundingData, LoginResponse, PipelineData,
+  PipelineHistoryEntry, RealCampaign, RealDocument, RealFundingEvent, RealFundingSummary,
+  RealReport, RegisterResponse, ReportData, TargetRow,
 } from "./types";
 
 async function authedGet<T>(path: string): Promise<T> {
@@ -99,3 +100,20 @@ export const patchPipelineStage = (targetId: string, stage: string, reason?: str
 
 export const getPipelineHistory = (targetId: string) =>
   realFetch<{ history: PipelineHistoryEntry[] }>(`/api/pipeline/${targetId}/history`);
+
+export const getRealCampaigns = () => realFetch<RealCampaign[]>("/api/campaigns");
+export const createCampaign = (body: { campaign_name: string; channel?: string; target_count?: number }) =>
+  realFetch<RealCampaign>("/api/campaigns", { method: "POST", body: JSON.stringify(body) });
+export const launchCampaign = (id: string) => realFetch<RealCampaign>(`/api/campaigns/${id}/launch`, { method: "POST" });
+export const pauseCampaign = (id: string) => realFetch<RealCampaign>(`/api/campaigns/${id}/pause`, { method: "POST" });
+
+export const getRealDataRoom = () => realFetch<RealDocument[]>("/api/data-room");
+
+export const getRealFundingSummary = () => realFetch<RealFundingSummary>("/api/funding/summary");
+export const getRealFundingEvents = () => realFetch<RealFundingEvent[]>("/api/funding/events");
+
+export const getRealReports = () => realFetch<RealReport[]>("/api/reports");
+
+export const getAlerts = () => realFetch<AlertRow[]>("/api/alerts");
+export const markAlertRead = (id: string) => realFetch<AlertRow>(`/api/alerts/${id}/read`, { method: "PATCH" });
+export const markAllAlertsRead = () => realFetch<{ marked_read: number }>("/api/alerts/mark-all-read", { method: "POST" });

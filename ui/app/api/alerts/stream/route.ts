@@ -16,10 +16,18 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8001";
   const authHeader = request.headers.get("authorization");
+  // support_manager/cc_admin tokens carry no single client_id — the backend
+  // resolves which client's alerts to stream from this header instead, the
+  // same as every other real-portal request (see lib/api.ts's realHeaders).
+  // Forgetting it here means those two roles always get a client-less 400,
+  // even though client_admin/team/readonly work fine without it.
+  const actingClientId = request.headers.get("x-acting-client-id");
 
-  const backendResponse = await fetch(`${apiUrl}/api/alerts/stream`, {
-    headers: authHeader ? { authorization: authHeader } : undefined,
-  });
+  const headers: Record<string, string> = {};
+  if (authHeader) headers.authorization = authHeader;
+  if (actingClientId) headers["x-acting-client-id"] = actingClientId;
+
+  const backendResponse = await fetch(`${apiUrl}/api/alerts/stream`, { headers });
 
   return new Response(backendResponse.body, {
     status: backendResponse.status,
