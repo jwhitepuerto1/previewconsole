@@ -1,9 +1,9 @@
 import { getActingClientId, getToken, needsActingClientId } from "./auth";
 import type {
-  ActionItemRow, AlertRow, CampaignsData, DashboardData, DataRoomData, FundingData, LoginResponse,
-  MeetingRow, NoteRow, PipelineData, PipelineHistoryEntry, RealCampaign, RealDocument,
-  RealFundingEvent, RealFundingSummary, RealReport, RegisterResponse, ReportData,
-  SupportAlertRow, SupportOverview, TargetRow,
+  ActionItemRow, AlertRow, CampaignsData, DashboardData, DataRoomData, FundingData,
+  LinkedinTouchpointRow, LoginResponse, MeetingRow, NoteRow, PipelineData, PipelineHistoryEntry,
+  RealCampaign, RealDocument, RealFundingEvent, RealFundingSummary, RealReport, RegisterResponse,
+  ReportData, SupportAlertRow, SupportOverview, TargetRow,
 } from "./types";
 
 async function authedGet<T>(path: string): Promise<T> {
@@ -145,3 +145,11 @@ export const getRealReports = () => realFetch<RealReport[]>("/api/reports");
 export const getAlerts = () => realFetch<AlertRow[]>("/api/alerts");
 export const markAlertRead = (id: string) => realFetch<AlertRow>(`/api/alerts/${id}/read`, { method: "PATCH" });
 export const markAllAlertsRead = () => realFetch<{ marked_read: number }>("/api/alerts/mark-all-read", { method: "POST" });
+
+export const getLinkedinTouchpoints = (targetId: string) => realFetch<LinkedinTouchpointRow[]>(`/api/linkedin/${targetId}`);
+export const createLinkedinTouchpoint = (body: { investor_target_id: string; touchpoint_type: string; content_summary?: string }) =>
+  realFetch<LinkedinTouchpointRow>("/api/linkedin", { method: "POST", body: JSON.stringify(body) });
+export const markTouchpointResponse = (id: string, response_summary: string) =>
+  realFetch<LinkedinTouchpointRow>(`/api/linkedin/${id}`, {
+    method: "PATCH", body: JSON.stringify({ response_received: true, response_summary }),
+  });

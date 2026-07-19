@@ -251,3 +251,15 @@ export interface SupportAlertRow {
   is_read: boolean;
   created_at: string;
 }
+
+export interface LinkedinTouchpointRow {
+  id: string;
+  investor_target_id: string | null;
+  touchpoint_type: string | null;
+  content_summary: string | null;
+  sent_by: string | null;
+  sent_at: string | null;
+  response_received: boolean;
+  response_summary: string | null;
+  response_at: string | null;
+}
