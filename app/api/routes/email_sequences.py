@@ -26,6 +26,7 @@ from app.core.config import settings
 from app.db.models.client_raise import Campaign, EmailSequenceEvent, InvestorTarget
 from app.db.models.platform import PlatformAccount
 from app.db.session import get_engine, get_platform_db, get_tenant_db
+from app.services.alert_dispatcher import create_alert
 
 router = APIRouter()
 
@@ -103,6 +104,16 @@ async def sync_smartlead_webhook(
             smartlead_event_id=body.smartlead_event_id,
             raw_payload=body.model_dump(),
         ))
+
+        if body.event_type == "replied":
+            await create_alert(
+                client_db, str(client_id),
+                alert_type="positive_reply", severity="info",
+                title="Positive reply",
+                message=f"{target.full_name if target else body.lead_email} replied to outreach",
+                related_investor_id=target.id if target else None,
+            )
+
         await client_db.commit()
 
     return {"status": "ok"}

@@ -9,14 +9,17 @@ from __future__ import annotations
 import uuid
 from datetime import date, datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import require_permission
+from app.core.config import settings
 from app.db.models.client_raise import InvestorTarget, OnboardingChecklistItem, OnboardingRecord
-from app.db.session import get_tenant_db
+from app.db.models.platform import PlatformAccount
+from app.db.session import get_engine, get_platform_db, get_tenant_db
+from app.services import north_capital
 from app.services.alert_dispatcher import create_alert
 
 router = APIRouter()
@@ -65,9 +68,17 @@ async def list_onboarding(db: AsyncSession = Depends(get_tenant_db)):
 
 @router.get("/{target_id}", response_model=OnboardingOut, dependencies=[Depends(require_permission(*_READ_PERMS))])
 async def get_onboarding_for_target(target_id: uuid.UUID, db: AsyncSession = Depends(get_tenant_db)):
+    # No uniqueness constraint on investor_target_id — an investor who
+    # withdrew and later re-engaged could legitimately have more than one
+    # row. scalar_one_or_none() would 500 on that; take the newest instead.
     record = (
-        await db.execute(select(OnboardingRecord).where(OnboardingRecord.investor_target_id == target_id))
-    ).scalar_one_or_none()
+        await db.execute(
+            select(OnboardingRecord)
+            .where(OnboardingRecord.investor_target_id == target_id)
+            .order_by(OnboardingRecord.created_at.desc())
+            .limit(1)
+        )
+    ).scalars().first()
     if not record:
         raise HTTPException(status_code=404, detail="No onboarding record for this investor target.")
     return _to_out(record)
@@ -80,6 +91,18 @@ async def initiate_onboarding(body: CreateOnboardingRequest, db: AsyncSession = 
         structure=body.structure, status="initiated",
     )
     db.add(record)
+    await db.flush()
+
+    target = await db.get(InvestorTarget, body.investor_target_id)
+    if target and target.email:
+        reference = await north_capital.initiate_kyc(
+            investor_name=target.full_name or target.email, investor_email=target.email,
+            investment_amount=body.investment_amount,
+        )
+        if reference:
+            record.kyc_provider = "north_capital"
+            record.north_capital_reference = reference
+
     await db.commit()
     return _to_out(record)
 
@@ -150,3 +173,71 @@ async def update_checklist_item(onboarding_id: uuid.UUID, item_id: uuid.UUID, bo
         item.completed_at = datetime.now(timezone.utc)
     await db.commit()
     return ChecklistItemOut(id=item.id, item_name=item.item_name, item_type=item.item_type, status=item.status, due_date=item.due_date, completed_at=item.completed_at)
+
+
+class NorthCapitalWebhookEvent(BaseModel):
+    event_type: str  # kyc_complete | accreditation_verified | subscription_signed | funded
+    reference: str
+
+
+_NC_EVENT_TO_STATUS = {
+    "kyc_complete": "kyc_complete",
+    "accreditation_verified": "accreditation_complete",
+    "subscription_signed": "docs_signed",
+    "funded": "funded",
+}
+
+
+@router.post("/webhooks/north-capital/{client_id}")
+async def north_capital_webhook(
+    client_id: uuid.UUID,
+    body: NorthCapitalWebhookEvent,
+    x_webhook_secret: str | None = Header(default=None),
+    platform_db: AsyncSession = Depends(get_platform_db),
+):
+    """Unauthenticated (North Capital can't hold a per-client JWT) — guarded
+    by a shared secret instead, same pattern as Smartlead's webhook in
+    email_sequences.py. client_id is in the path for the same reason: the
+    onboarding record this event belongs to lives in that client's own
+    database, and North Capital's payload has no way to tell us which of
+    our per-client databases that is."""
+    if not settings.north_capital_webhook_secret or x_webhook_secret != settings.north_capital_webhook_secret:
+        raise HTTPException(status_code=401, detail="Invalid or missing webhook secret.")
+
+    account = (
+        await platform_db.execute(select(PlatformAccount).where(PlatformAccount.id == client_id))
+    ).scalar_one_or_none()
+    if not account or not account.client_db_url:
+        raise HTTPException(status_code=404, detail="Client account not found or not provisioned.")
+
+    new_status = _NC_EVENT_TO_STATUS.get(body.event_type)
+    if not new_status:
+        raise HTTPException(status_code=400, detail=f"Unknown event_type: {body.event_type}")
+
+    _, sessionmaker = get_engine(account.client_db_url)
+    async with sessionmaker() as db:
+        record = (
+            await db.execute(select(OnboardingRecord).where(OnboardingRecord.north_capital_reference == body.reference))
+        ).scalar_one_or_none()
+        if not record:
+            raise HTTPException(status_code=404, detail="No onboarding record for this North Capital reference.")
+
+        now = datetime.now(timezone.utc)
+        record.status = new_status
+        if new_status == "kyc_complete":
+            record.kyc_completed_at = now
+        elif new_status == "accreditation_complete":
+            record.accreditation_verified_at = now
+        elif new_status == "docs_signed":
+            record.subscription_doc_signed_at = now
+
+        await create_alert(
+            db, str(client_id),
+            alert_type="onboarding_update", severity="info",
+            title="Onboarding update (North Capital)",
+            message=f"Onboarding status: {new_status}",
+            related_investor_id=record.investor_target_id,
+        )
+        await db.commit()
+
+    return {"status": "ok"}

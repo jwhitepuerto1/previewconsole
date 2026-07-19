@@ -50,6 +50,18 @@ class Settings(BaseSettings):
     smartlead_api_key: str = ""
     smartlead_webhook_secret: str = ""
 
+    # SuiteCRM (investor-relationship record keeping — app/services/suitecrm.py).
+    suitecrm_url: str = ""
+    suitecrm_api_key: str = ""
+
+    # North Capital (KYC/accreditation/subscription docs — app/services/north_capital.py).
+    # Same shared-secret pattern as Smartlead's webhook — North Capital can't
+    # hold a per-client JWT either.
+    north_capital_base_url: str = ""
+    north_capital_api_key: str = ""
+    north_capital_environment: str = "sandbox"
+    north_capital_webhook_secret: str = ""
+
     @property
     def debug(self) -> bool:
         return self.environment == "development"

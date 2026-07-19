@@ -11,8 +11,8 @@ from app.api.routes import (
 
 app = FastAPI(
     title="IAS Capital Raise Module",
-    description="Preview Mode marketing demo + real account/rep-tools Phase 1 + Phase 2 campaign workflow + Phase 3 data room/onboarding/funding + Phase 4 support dashboard.",
-    version="0.5.0",
+    description="Preview Mode marketing demo + real account/rep-tools Phases 1-4 + Phase 6 SuiteCRM/North Capital/Smartlead integrations.",
+    version="0.6.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )

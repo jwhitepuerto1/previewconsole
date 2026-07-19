@@ -10,8 +10,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import require_permission
-from app.db.models.client_raise import Meeting, MeetingActionItem
+from app.db.models.client_raise import InvestorTarget, Meeting, MeetingActionItem
 from app.db.session import get_tenant_db
+from app.services import suitecrm
 
 router = APIRouter()
 
@@ -87,6 +88,15 @@ async def update_meeting(meeting_id: uuid.UUID, body: UpdateMeetingRequest, db: 
     for field, value in body.model_dump(exclude_unset=True).items():
         setattr(meeting, field, value)
     await db.commit()
+
+    if body.outcome and meeting.investor_target_id:
+        target = await db.get(InvestorTarget, meeting.investor_target_id)
+        if target and target.email:
+            await suitecrm.log_activity(
+                email=target.email,
+                description=f"Meeting ({meeting.meeting_type}) outcome: {body.outcome}",
+            )
+
     return _to_out(meeting)
 
 

@@ -21,6 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import require_permission
 from app.db.models.client_raise import InvestorTarget, PipelineHistory, PipelineRecord
 from app.db.session import get_tenant_db
+from app.services import suitecrm
 from app.services.alert_dispatcher import create_alert
 from app.services.rep_activity import log_rep_activity
 
@@ -112,6 +113,9 @@ async def move_stage(
             message=f"{target.full_name if target else 'An investor'} moved to {body.stage}",
             related_investor_id=target_id,
         )
+        if target and target.email:
+            await suitecrm.push_contact(email=target.email, name=target.full_name, title=target.title, company=target.company)
+            await suitecrm.log_activity(email=target.email, description=f"Pipeline stage moved to {body.stage} by {moved_by}")
 
     return {"investor_target_id": str(target_id), "from_stage": old_stage, "to_stage": body.stage}
 

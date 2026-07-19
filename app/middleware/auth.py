@@ -27,10 +27,11 @@ OPEN_PATHS = {
 }
 
 # Prefix-matched open paths — for routes with a path parameter (the {client_id}
-# in Smartlead's webhook URL), so a fixed OPEN_PATHS set membership check can't
-# apply. Auth here is the X-Webhook-Secret header the route itself checks, not
-# a Bearer token — Smartlead has no way to hold a per-client JWT.
-OPEN_PATH_PREFIXES = ("/api/email-events/sync/",)
+# in Smartlead's and North Capital's webhook URLs), so a fixed OPEN_PATHS set
+# membership check can't apply. Auth here is the X-Webhook-Secret header each
+# route itself checks, not a Bearer token — neither third party can hold a
+# per-client JWT.
+OPEN_PATH_PREFIXES = ("/api/email-events/sync/", "/api/onboarding/webhooks/north-capital/")
 
 # Roles with no single client_id in their token — they act on a client
 # specified per-request via X-Acting-Client-Id instead.
