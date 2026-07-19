@@ -184,3 +184,36 @@ export interface AlertRow {
   is_read: boolean;
   created_at: string;
 }
+
+export interface MeetingRow {
+  id: string;
+  investor_target_id: string | null;
+  meeting_type: string | null;
+  scheduled_at: string | null;
+  duration_minutes: number | null;
+  participants: string[] | null;
+  location_or_link: string | null;
+  status: string | null;
+  outcome: string | null;
+  next_step: string | null;
+  next_step_date: string | null;
+}
+
+export interface ActionItemRow {
+  id: string;
+  meeting_id: string | null;
+  action: string | null;
+  assigned_to: string | null;
+  due_date: string | null;
+  completed: boolean;
+  completed_at: string | null;
+}
+
+export interface NoteRow {
+  id: string;
+  investor_target_id: string | null;
+  note_type: string | null;
+  note: string | null;
+  logged_by: string | null;
+  logged_at: string;
+}

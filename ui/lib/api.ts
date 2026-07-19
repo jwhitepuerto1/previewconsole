@@ -1,8 +1,8 @@
 import { getActingClientId, getToken, needsActingClientId } from "./auth";
 import type {
-  AlertRow, CampaignsData, DashboardData, DataRoomData, FundingData, LoginResponse, PipelineData,
-  PipelineHistoryEntry, RealCampaign, RealDocument, RealFundingEvent, RealFundingSummary,
-  RealReport, RegisterResponse, ReportData, TargetRow,
+  ActionItemRow, AlertRow, CampaignsData, DashboardData, DataRoomData, FundingData, LoginResponse,
+  MeetingRow, NoteRow, PipelineData, PipelineHistoryEntry, RealCampaign, RealDocument,
+  RealFundingEvent, RealFundingSummary, RealReport, RegisterResponse, ReportData, TargetRow,
 } from "./types";
 
 async function authedGet<T>(path: string): Promise<T> {
@@ -111,6 +111,24 @@ export const getRealDataRoom = () => realFetch<RealDocument[]>("/api/data-room")
 
 export const getRealFundingSummary = () => realFetch<RealFundingSummary>("/api/funding/summary");
 export const getRealFundingEvents = () => realFetch<RealFundingEvent[]>("/api/funding/events");
+
+// No per-investor filter on GET /api/meetings (matches the spec's own flat
+// route list) — callers filter client-side by investor_target_id.
+export const getMeetings = () => realFetch<MeetingRow[]>("/api/meetings");
+export const createMeeting = (body: {
+  investor_target_id: string; meeting_type: string; scheduled_at: string;
+  duration_minutes?: number; location_or_link?: string;
+}) => realFetch<MeetingRow>("/api/meetings", { method: "POST", body: JSON.stringify(body) });
+export const updateMeeting = (id: string, body: { status?: string; outcome?: string; next_step?: string }) =>
+  realFetch<MeetingRow>(`/api/meetings/${id}`, { method: "PATCH", body: JSON.stringify(body) });
+
+export const getActionItems = (meetingId: string) => realFetch<ActionItemRow[]>(`/api/meetings/${meetingId}/action-items`);
+export const createActionItem = (meetingId: string, body: { action: string; assigned_to?: string }) =>
+  realFetch<ActionItemRow>(`/api/meetings/${meetingId}/action-items`, { method: "POST", body: JSON.stringify(body) });
+
+export const getNotes = (targetId: string) => realFetch<NoteRow[]>(`/api/notes/${targetId}`);
+export const createNote = (body: { investor_target_id: string; note: string; note_type?: string }) =>
+  realFetch<NoteRow>("/api/notes", { method: "POST", body: JSON.stringify(body) });
 
 export const getRealReports = () => realFetch<RealReport[]>("/api/reports");
 

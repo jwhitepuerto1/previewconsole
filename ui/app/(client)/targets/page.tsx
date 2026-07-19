@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createTarget, getTargets } from "@/lib/api";
 import { getActingClientId, needsActingClientId } from "@/lib/auth";
 import type { TargetRow } from "@/lib/types";
@@ -71,13 +72,17 @@ export default function TargetsPage() {
             <p className="text-sm text-slate-300">No targets yet.</p>
           ) : (
             targets.map((t) => (
-              <div key={t.id} className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950 px-3 py-2">
+              <Link
+                key={t.id}
+                href={`/targets/${t.id}`}
+                className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 hover:border-brand-accent"
+              >
                 <div>
                   <p className="text-sm font-medium text-slate-100">{t.full_name}</p>
                   <p className="text-xs text-slate-300">{t.title} · {t.company}</p>
                 </div>
                 <span className="text-xs text-slate-300">{t.status}</span>
-              </div>
+              </Link>
             ))
           )}
         </div>
