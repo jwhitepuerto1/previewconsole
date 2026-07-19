@@ -4,14 +4,15 @@ from app.core.config import settings  # validates env vars on boot
 from app.middleware.auth import AuthMiddleware
 from app.middleware.preview import PreviewIsolationMiddleware
 from app.api.routes import (
-    accounts, alerts, auth, campaigns, dashboard, email_sequences, linkedin,
-    meetings, notes, oauth, pipeline, preview, reports, targets,
+    accounts, alerts, auth, campaigns, dashboard, data_room, email_sequences,
+    funding, linkedin, meetings, notes, oauth, onboarding, pipeline, preview,
+    reports, targets,
 )
 
 app = FastAPI(
     title="IAS Capital Raise Module",
-    description="Preview Mode marketing demo + real account/rep-tools Phase 1 + Phase 2 campaign workflow.",
-    version="0.3.0",
+    description="Preview Mode marketing demo + real account/rep-tools Phase 1 + Phase 2 campaign workflow + Phase 3 data room/onboarding/funding.",
+    version="0.4.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -35,6 +36,9 @@ app.include_router(meetings.router, prefix="/api/meetings", tags=["Meetings"])
 app.include_router(notes.router, prefix="/api/notes", tags=["Notes"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 app.include_router(alerts.router, prefix="/api/alerts", tags=["Alerts"])
+app.include_router(data_room.router, prefix="/api/data-room", tags=["Data Room"])
+app.include_router(onboarding.router, prefix="/api/onboarding", tags=["Onboarding"])
+app.include_router(funding.router, prefix="/api/funding", tags=["Funding"])
 
 
 @app.get("/health", tags=["Health"])

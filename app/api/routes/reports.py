@@ -16,7 +16,7 @@ from app.services.weekly_report import generate_report
 
 router = APIRouter()
 
-_READ_PERMS = ("read:reports", "read:all_assigned_clients", "*")
+_READ_PERMS = ("read:reports", "read:reports_summary", "read:all_assigned_clients", "*")
 _WRITE_PERMS = ("write:reports", "*")
 
 

@@ -19,7 +19,7 @@ from app.db.session import get_tenant_db
 router = APIRouter()
 
 
-@router.get("", dependencies=[Depends(require_permission("read:own_raise", "read:all_assigned_clients", "*"))])
+@router.get("", dependencies=[Depends(require_permission("read:own_raise", "read:all_assigned_clients", "read:portal", "*"))])
 async def dashboard(db: AsyncSession = Depends(get_tenant_db)):
     config = (await db.execute(select(RaiseConfig))).scalars().first()
     funding = (await db.execute(select(FundingSummary))).scalars().first()
