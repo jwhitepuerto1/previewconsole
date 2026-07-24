@@ -19,6 +19,7 @@ const CLIENT_LINKS = [
   { href: "/targets", label: "Targets" },
   { href: "/campaigns", label: "Campaigns" },
   { href: "/data-room", label: "Data Room" },
+  { href: "/onboarding", label: "Onboarding" },
   { href: "/funding", label: "Funding" },
   { href: "/reports", label: "Reports" },
 ];

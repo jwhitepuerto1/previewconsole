@@ -263,3 +263,25 @@ export interface LinkedinTouchpointRow {
   response_summary: string | null;
   response_at: string | null;
 }
+
+export interface OnboardingRow {
+  id: string;
+  investor_target_id: string | null;
+  investment_amount: number | null;
+  structure: string | null;
+  status: string | null;
+  kyc_provider: string | null;
+  kyc_completed_at: string | null;
+  subscription_doc_sent_at: string | null;
+  subscription_doc_signed_at: string | null;
+  accreditation_verified_at: string | null;
+}
+
+export interface ChecklistItemRow {
+  id: string;
+  item_name: string | null;
+  item_type: string | null;
+  status: string | null;
+  due_date: string | null;
+  completed_at: string | null;
+}

@@ -1,9 +1,10 @@
 import { getActingClientId, getToken, needsActingClientId } from "./auth";
 import type {
-  ActionItemRow, AlertRow, CampaignsData, DashboardData, DataRoomData, FundingData,
-  LinkedinTouchpointRow, LoginResponse, MeetingRow, NoteRow, PipelineData, PipelineHistoryEntry,
-  RealCampaign, RealDocument, RealFundingEvent, RealFundingSummary, RealReport, RegisterResponse,
-  ReportData, SupportAlertRow, SupportOverview, TargetRow,
+  ActionItemRow, AlertRow, CampaignsData, ChecklistItemRow, DashboardData, DataRoomData,
+  FundingData, LinkedinTouchpointRow, LoginResponse, MeetingRow, NoteRow, OnboardingRow,
+  PipelineData, PipelineHistoryEntry, RealCampaign, RealDocument, RealFundingEvent,
+  RealFundingSummary, RealReport, RegisterResponse, ReportData, SupportAlertRow, SupportOverview,
+  TargetRow,
 } from "./types";
 
 async function authedGet<T>(path: string): Promise<T> {
@@ -153,3 +154,13 @@ export const markTouchpointResponse = (id: string, response_summary: string) =>
   realFetch<LinkedinTouchpointRow>(`/api/linkedin/${id}`, {
     method: "PATCH", body: JSON.stringify({ response_received: true, response_summary }),
   });
+
+export const getOnboardingList = () => realFetch<OnboardingRow[]>("/api/onboarding");
+export const getOnboardingForTarget = (targetId: string) => realFetch<OnboardingRow>(`/api/onboarding/${targetId}`);
+export const initiateOnboarding = (body: { investor_target_id: string; investment_amount?: number; structure?: string }) =>
+  realFetch<OnboardingRow>("/api/onboarding", { method: "POST", body: JSON.stringify(body) });
+export const updateOnboardingStatus = (id: string, status: string) =>
+  realFetch<OnboardingRow>(`/api/onboarding/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) });
+export const getChecklist = (onboardingId: string) => realFetch<ChecklistItemRow[]>(`/api/onboarding/${onboardingId}/checklist`);
+export const updateChecklistItem = (onboardingId: string, itemId: string, status: string) =>
+  realFetch<ChecklistItemRow>(`/api/onboarding/${onboardingId}/checklist/${itemId}`, { method: "PATCH", body: JSON.stringify({ status }) });

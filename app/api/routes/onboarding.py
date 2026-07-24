@@ -84,6 +84,18 @@ async def get_onboarding_for_target(target_id: uuid.UUID, db: AsyncSession = Dep
     return _to_out(record)
 
 
+# Standard checklist seeded on every initiation — there's no create-item
+# endpoint (matches the spec's own route list, which only has GET/PATCH for
+# checklist items), so a real onboarding needs these to exist from the start
+# rather than requiring a manual "add checklist item" step every time.
+_STANDARD_CHECKLIST = [
+    ("KYC Verification", "kyc"),
+    ("Accreditation Verification", "accreditation"),
+    ("Subscription Agreement", "subscription_doc"),
+    ("Wire Instructions", "wire_instructions"),
+]
+
+
 @router.post("", response_model=OnboardingOut, dependencies=[Depends(require_permission(*_WRITE_PERMS))])
 async def initiate_onboarding(body: CreateOnboardingRequest, db: AsyncSession = Depends(get_tenant_db)):
     record = OnboardingRecord(
@@ -92,6 +104,11 @@ async def initiate_onboarding(body: CreateOnboardingRequest, db: AsyncSession = 
     )
     db.add(record)
     await db.flush()
+
+    for item_name, item_type in _STANDARD_CHECKLIST:
+        db.add(OnboardingChecklistItem(
+            onboarding_record_id=record.id, item_name=item_name, item_type=item_type, status="pending",
+        ))
 
     target = await db.get(InvestorTarget, body.investor_target_id)
     if target and target.email:
